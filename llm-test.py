@@ -140,7 +140,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     local_dir="local:///home/ray/tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
 
     # Call the remote function to download the file
-    download_task = download_file.remote(file_url, local_file_path)
+    download_task = download_file.remote(repo_url, local_dir)
 
     # Wait for the download to complete and get the result
     ray.get(download_task)
