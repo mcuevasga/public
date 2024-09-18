@@ -113,9 +113,9 @@ def parse_vllm_args(cli_args: Dict[str, str]):
 
     repo_id = "TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF"
     filename = "tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
-    local_dir="/data/models/"
+    local_dir="/home/ray/models/"
 
-    model = hf_hub_download(repo_id, filename=filename, local_dir=local_dir)
+    model = hf_hub_download(repo_id, filename=filename, force_download=True, local_dir=local_dir)
 
     parsed_args.model = model
     parsed_args.tensor_parallel_size = 1
