@@ -112,7 +112,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args = parser.parse_args(args=arg_strings)
 
     repo_id = "TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF"
-    filename = "tinyllama-1.1b-chat-v1.0.Q4_0.gguf"
+    filename = "tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
 
     model = hf_hub_download(repo_id, filename=filename)
 
