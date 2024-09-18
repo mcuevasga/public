@@ -7,6 +7,7 @@ from starlette.requests import Request
 from starlette.responses import StreamingResponse, JSONResponse, Response
 
 from ray import serve
+import ray
 
 from vllm.engine.arg_utils import AsyncEngineArgs
 from vllm.engine.async_llm_engine import AsyncLLMEngine
@@ -94,9 +95,10 @@ class VLLMDeployment:
             assert isinstance(generator, ChatCompletionResponse)
             return JSONResponse(content=generator.model_dump())
 
-def download_file(url, local_path):
+@ray.remote
+def download_file(url: str, local_path: str):
     """
-    Download a file from a URL and save it to a local path using urllib.
+    Download a file from a URL and save it to a local path using urllib inside a Ray task.
 
     :param url: URL of the file to download.
     :param local_path: Local path where the file will be saved.
@@ -114,6 +116,7 @@ def download_file(url, local_path):
     
     except Exception as e:
         print(f"Failed to download file: {e}")
+        raise e
 
 
 def parse_vllm_args(cli_args: Dict[str, str]):
@@ -134,11 +137,17 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args = parser.parse_args(args=arg_strings)
 
     repo_url="https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
-    local_dir="local:///home/ray/"
+    local_dir="local:///home/ray/tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
 
-    download_file(repo_url, local_dir)
+    # Call the remote function to download the file
+    download_task = download_file.remote(file_url, local_file_path)
 
-    parsed_args.model = "local:///home/ray/tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
+    # Wait for the download to complete and get the result
+    ray.get(download_task)
+
+    print(f"Download task completed, file saved to: {local_file_path}")
+
+    parsed_args.model = local_dir
     parsed_args.tensor_parallel_size = 1
     parsed_args.gpu_memory_utilization = 0.85
     parsed_args.tokenizer="TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF"
