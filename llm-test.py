@@ -111,15 +111,16 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     logger.info(arg_strings)
     parsed_args = parser.parse_args(args=arg_strings)
 
-    repo_id = "TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF"
-    filename = "tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
+    # repo_id = "TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF"
+    # filename = "tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
 
-    model = hf_hub_download(repo_id, filename=filename)
-
+    # model = hf_hub_download(repo_id, filename=filename)
+    model = "TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF"
+    
     parsed_args.model = model
     parsed_args.tensor_parallel_size = 1
     parsed_args.gpu_memory_utilization = 0.85
-    parsed_args.tokenizer="TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+    parsed_args.tokenizer="TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF"
 
     return parsed_args
 
