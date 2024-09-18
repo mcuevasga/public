@@ -145,7 +145,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     # Wait for the download to complete and get the result
     ray.get(download_task)
 
-    print(f"Download task completed, file saved to: {local_file_path}")
+    print(f"Download task completed, file saved to: {local_dir}")
 
     parsed_args.model = local_dir
     parsed_args.tensor_parallel_size = 1
