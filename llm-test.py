@@ -1,5 +1,6 @@
 from typing import Dict, Optional, List
 import logging
+import urllib.request
 
 from fastapi import FastAPI
 from starlette.requests import Request
@@ -93,6 +94,27 @@ class VLLMDeployment:
             assert isinstance(generator, ChatCompletionResponse)
             return JSONResponse(content=generator.model_dump())
 
+def download_file(url, local_path):
+    """
+    Download a file from a URL and save it to a local path using urllib.
+
+    :param url: URL of the file to download.
+    :param local_path: Local path where the file will be saved.
+    """
+    try:
+        # Open the URL
+        with urllib.request.urlopen(url) as response:
+            # Open the local file for writing in binary mode
+            with open(local_path, 'wb') as file:
+                # Read and write the file in chunks
+                while chunk := response.read(8192):
+                    file.write(chunk)
+        
+        print(f"File downloaded successfully and saved to {local_path}")
+    
+    except Exception as e:
+        print(f"Failed to download file: {e}")
+
 
 def parse_vllm_args(cli_args: Dict[str, str]):
     """Parses vLLM args based on CLI inputs.
@@ -111,13 +133,12 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     logger.info(arg_strings)
     parsed_args = parser.parse_args(args=arg_strings)
 
-    repo_id = "TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF"
-    filename = "tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
-    local_dir="local:///home/ray/models/"
+    repo_url="https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
+    local_dir="local:///home/ray/"
 
-    model = hf_hub_download(repo_id, filename=filename, force_download=True, local_dir=local_dir)
+    download_file(repo_url, local_dir)
 
-    parsed_args.model = model
+    parsed_args.model = "local:///home/ray/tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
     parsed_args.tensor_parallel_size = 1
     parsed_args.gpu_memory_utilization = 0.85
     parsed_args.tokenizer="TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF"
