@@ -137,7 +137,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args = parser.parse_args(args=arg_strings)
 
     repo_url="https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
-    local_dir="local:///home/ray/tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
+    local_dir="/home/ray/tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
 
     # Call the remote function to download the file
     download_task = download_file.remote(repo_url, local_dir)
