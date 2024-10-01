@@ -114,6 +114,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     model = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
     parsed_args.model = model
+    parsed_args.served_model_name = [model]
     parsed_args.tensor_parallel_size = 1
     parsed_args.gpu_memory_utilization = 0.75
 
