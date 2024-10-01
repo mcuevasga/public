@@ -111,7 +111,9 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     logger.info(arg_strings)
     parsed_args = parser.parse_args(args=arg_strings)
 
-    model = "/tmp/models/TinyLlama-1.1B-Chat-v1.0"
+    model_path = "/tmp/models/TinyLlama-1.1B-Chat-v1.0"
+    model_name = "TinyLlama-1.1B-Chat-v1.0"
+    model = BaseModelPath(model_path=model_path, name=model_name)
 
     parsed_args.model = model
     parsed_args.tensor_parallel_size = 1
