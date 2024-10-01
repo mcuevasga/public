@@ -112,7 +112,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     logger.info(arg_strings)
     parsed_args = parser.parse_args(args=arg_strings)
 
-    filename = "llama-2-7b-chat.Q3_K_S.gguf"
+    filename = "tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
     local_dir = "/tmp/models/"
     model = f'{local_dir}{filename}'
 
