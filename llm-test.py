@@ -16,7 +16,7 @@ from vllm.entrypoints.openai.protocol import (
     ErrorResponse,
 )
 from vllm.entrypoints.openai.serving_chat import OpenAIServingChat
-from vllm.entrypoints.openai.serving_engine import LoRAModulePath, BaseModelPath
+from vllm.entrypoints.openai.serving_engine import LoRAModulePath
 from vllm.utils import FlexibleArgumentParser
 
 import huggingface_hub
@@ -65,10 +65,11 @@ class VLLMDeployment:
         if not self.openai_serving_chat:
             model_config = await self.engine.get_model_config()
             # Determine the name of the served model for the OpenAI client.
-            if self.engine_args.served_model_name is not None:
-                served_model_names = self.engine_args.served_model_name
-            else:
-                served_model_names = [self.engine_args.model]
+            # if self.engine_args.served_model_name is not None:
+            #     served_model_names = self.engine_args.served_model_name
+            # else:
+            #     served_model_names = [self.engine_args.model]
+            served_model_names = [self.engine_args.model]
             self.openai_serving_chat = OpenAIServingChat(
                 self.engine,
                 model_config,
@@ -111,13 +112,15 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     logger.info(arg_strings)
     parsed_args = parser.parse_args(args=arg_strings)
 
-    model_path = "/tmp/models/TinyLlama-1.1B-Chat-v1.0"
-    model_name = "TinyLlama-1.1B-Chat-v1.0"
-    model = BaseModelPath(model_path=model_path, name=model_name)
+    filename = "llama-2-7b-chat.Q3_K_S.gguf"
+    local_dir = "/tmp/models/"
+    model = f'{local_dir}{filename}'
 
     parsed_args.model = model
     parsed_args.tensor_parallel_size = 1
     parsed_args.gpu_memory_utilization = 0.75
+
+    parsed_args.tokenizer="/tmp/models/TinyLlama-1.1B-Chat-v1.0"
 
     return parsed_args
 
