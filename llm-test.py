@@ -115,8 +115,9 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     # filename = "tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
     # local_dir = "/tmp/models/"
     # model = f'{local_dir}{filename}'
-    # model = "/tmp/models/TinyLlama-1.1B-Chat-v1.0"
+    model = "/tmp/models/TinyLlama-1.1B-Chat-v1.0"
 
+    parsed_args.model = model
     parsed_args.tensor_parallel_size = 1
     parsed_args.gpu_memory_utilization = 0.6
 
