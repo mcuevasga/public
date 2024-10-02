@@ -69,7 +69,7 @@ class VLLMDeployment:
             #     served_model_names = self.engine_args.served_model_name
             # else:
             #     served_model_names = [self.engine_args.model]
-            base_model_paths = [BaseModelPath(name="TinyLlama-1.1B-Chat-v1.0", model_path="/tmp/models/TinyLlama-1.1B-Chat-v1.0")]
+            base_model_paths = [BaseModelPath(name="/tmp/models/TinyLlama-1.1B-Chat-v1.0", model_path="/tmp/models/TinyLlama-1.1B-Chat-v1.0")]
             self.openai_serving_chat = OpenAIServingChat(
                 self.engine,
                 model_config,
