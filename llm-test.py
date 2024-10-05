@@ -53,10 +53,6 @@ class VLLMDeployment:
         self.chat_template = chat_template
         self.engine = AsyncLLMEngine.from_engine_args(engine_args)        
 
-        # Create Ray actors for each pipeline stage (small VRAM vs. large VRAM)
-        self.small_vram_worker = SmallLayerWorker.remote(engine_args)  # For the node with 2GB VRAM
-        self.large_vram_worker = LargeLayerWorker.remote(engine_args)  # For the node with 8GB VRAM
-
     @app.post("/v1/chat/completions")
     async def create_chat_completion(
         self, request: ChatCompletionRequest, raw_request: Request
