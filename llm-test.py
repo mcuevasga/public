@@ -189,7 +189,6 @@ def build_app(cli_args: Dict[str, str]) -> serve.Application:
     #     pg_resources.append({"CPU": 1, "GPU": 1})  # for the vLLM actors
 
     pg_resources = [
-        {"CPU": 1},  # For the deployment replica
         {"CPU": 1, "GPU": 1, "accelerator_type_960": 1},  # For the small VRAM worker (2GB)
         {"CPU": 1, "GPU": 1, "accelerator_type_3070": 1},  # For the large VRAM worker (8GB)
     ]
