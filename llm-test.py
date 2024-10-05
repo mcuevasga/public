@@ -162,7 +162,8 @@ def parse_vllm_args(cli_args: Dict[str, str]):
 
     parsed_args.model = model
     parsed_args.tensor_parallel_size = 1
-    parsed_args.gpu_memory_utilization = 0.6
+    parsed_args.pipeline_parallel_size = 2
+    parsed_args.gpu_memory_utilization = 0.8
 
     parsed_args.tokenizer="/tmp/models/TinyLlama-1.1B-Chat-v1.0"
 
@@ -189,8 +190,8 @@ def build_app(cli_args: Dict[str, str]) -> serve.Application:
     #     pg_resources.append({"CPU": 1, "GPU": 1})  # for the vLLM actors
 
     pg_resources = [
-        {"CPU": 1, "GPU": 1, "accelerator_type_960": 1},  # For the small VRAM worker (2GB)
-        {"CPU": 1, "GPU": 1, "accelerator_type_3070": 1},  # For the large VRAM worker (8GB)
+        {"CPU": 1, "GPU": 1},  # For the small VRAM worker (2GB)
+        {"CPU": 1, "GPU": 1},  # For the large VRAM worker (8GB)
     ]
 
     # We use the "STRICT_SPREAD" strategy below to ensure all vLLM actors are placed on
