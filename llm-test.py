@@ -184,15 +184,20 @@ def build_app(cli_args: Dict[str, str]) -> serve.Application:
     tp = engine_args.tensor_parallel_size
     logger.info(f"Tensor parallelism = {tp}")
     # pg_resources = []
-    pg_resources = [{'node:2gb_gpu': 1, 'GPU': 1, 'CPU': 1}, {'node:8gb_gpu': 1, 'GPU': 1, 'CPU': 1}]
-    pg_resources.append({"CPU": 1})  # for the deployment replica
+    # pg_resources.append({"CPU": 1})  # for the deployment replica
     # for i in range(tp):
     #     pg_resources.append({"CPU": 1, "GPU": 1})  # for the vLLM actors
 
-    # We use the "STRICT_PACK" strategy below to ensure all vLLM actors are placed on
-    # the same Ray node.
+    pg_resources = [
+        {"CPU": 1},  # For the deployment replica
+        {"CPU": 1, "GPU": 1, "node:2gb_gpu": 1},  # For the small VRAM worker (2GB)
+        {"CPU": 1, "GPU": 1, "node:8gb_gpu": 1},  # For the large VRAM worker (8GB)
+    ]
+
+    # We use the "STRICT_SPREAD" strategy below to ensure all vLLM actors are placed on
+    # different Ray nodes.
     return VLLMDeployment.options(
-        placement_group_bundles=pg_resources, placement_group_strategy="STRICT_PACK"
+        placement_group_bundles=pg_resources, placement_group_strategy="STRICT_SPREAD"
     ).bind(
         engine_args,
         parsed_args.response_role,
