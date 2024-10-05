@@ -48,7 +48,7 @@ class VLLMDeployment:
     ):
 
         # Ray actors for different parts of the model
-        @ray.remote(num_gpus=1, resources={"node:2gb_gpu": 1})
+        @ray.remote(num_gpus=1, resources={"accelerator_type_960": 1})
         class SmallLayerWorker:
             def __init__(self, engine_args):
                 # Load only a subset of layers that fit into 2GB VRAM
@@ -62,7 +62,7 @@ class VLLMDeployment:
                     outputs = self.model_part(inputs)
                     return outputs.cpu()  # Send outputs to the next worker
 
-        @ray.remote(num_gpus=1, resources={"node:8gb_gpu": 1})
+        @ray.remote(num_gpus=1, resources={"accelerator_type_3070": 1})
         class LargeLayerWorker:
             def __init__(self, engine_args):
                 # Load the second part of the model that fits into 8GB VRAM
