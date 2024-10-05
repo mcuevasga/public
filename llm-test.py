@@ -46,6 +46,37 @@ class VLLMDeployment:
         lora_modules: Optional[List[LoRAModulePath]] = None,
         chat_template: Optional[str] = None,
     ):
+
+        # Ray actors for different parts of the model
+        @ray.remote(num_gpus=1, resources={"node:2gb_gpu": 1})
+        class SmallLayerWorker:
+            def __init__(self, engine_args):
+                # Load only a subset of layers that fit into 2GB VRAM
+                self.engine = AsyncLLMEngine.from_engine_args(engine_args)
+                self.model_part = self.engine.model.transformer.h[:6].cuda()  # First 6 layers
+
+            async def forward(self, inputs):
+                """Process the input through the first part of the model."""
+                with torch.no_grad():
+                    inputs = inputs.to("cuda")
+                    outputs = self.model_part(inputs)
+                    return outputs.cpu()  # Send outputs to the next worker
+
+        @ray.remote(num_gpus=1, resources={"node:8gb_gpu": 1})
+        class LargeLayerWorker:
+            def __init__(self, engine_args):
+                # Load the second part of the model that fits into 8GB VRAM
+                self.engine = AsyncLLMEngine.from_engine_args(engine_args)
+                self.model_part = self.engine.model.transformer.h[6:].cuda()  # Remaining layers
+
+            async def forward(self, inputs):
+                """Process the input through the second part of the model."""
+                with torch.no_grad():
+                    inputs = inputs.to("cuda")
+                    outputs = self.model_part(inputs)
+                    return outputs.cpu()  # Final output
+
+
         logger.info(f"Starting with engine args: {engine_args}")
         self.openai_serving_chat = None
         self.engine_args = engine_args
@@ -106,34 +137,6 @@ class VLLMDeployment:
             assert isinstance(generator, ChatCompletionResponse)
             return JSONResponse(content=generator.model_dump())
 
-    # Ray actors for different parts of the model
-    @ray.remote(num_gpus=1, resources={"node:2gb_gpu": 1})
-    class SmallLayerWorker:
-        def __init__(self, engine_args):
-            # Load only a subset of layers that fit into 2GB VRAM
-            self.engine = AsyncLLMEngine.from_engine_args(engine_args)
-            self.model_part = self.engine.model.transformer.h[:6].cuda()  # First 6 layers
-
-        async def forward(self, inputs):
-            """Process the input through the first part of the model."""
-            with torch.no_grad():
-                inputs = inputs.to("cuda")
-                outputs = self.model_part(inputs)
-                return outputs.cpu()  # Send outputs to the next worker
-
-    @ray.remote(num_gpus=1, resources={"node:8gb_gpu": 1})
-    class LargeLayerWorker:
-        def __init__(self, engine_args):
-            # Load the second part of the model that fits into 8GB VRAM
-            self.engine = AsyncLLMEngine.from_engine_args(engine_args)
-            self.model_part = self.engine.model.transformer.h[6:].cuda()  # Remaining layers
-
-        async def forward(self, inputs):
-            """Process the input through the second part of the model."""
-            with torch.no_grad():
-                inputs = inputs.to("cuda")
-                outputs = self.model_part(inputs)
-                return outputs.cpu()  # Final output
 
 def parse_vllm_args(cli_args: Dict[str, str]):
     """Parses vLLM args based on CLI inputs.
