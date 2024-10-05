@@ -5,7 +5,6 @@ from fastapi import FastAPI
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, JSONResponse, Response
 
-import ray
 from ray import serve
 
 from vllm.engine.arg_utils import AsyncEngineArgs
@@ -46,37 +45,6 @@ class VLLMDeployment:
         lora_modules: Optional[List[LoRAModulePath]] = None,
         chat_template: Optional[str] = None,
     ):
-
-        # Ray actors for different parts of the model
-        @ray.remote(num_gpus=1, resources={"accelerator_type_960": 1})
-        class SmallLayerWorker:
-            def __init__(self, engine_args):
-                # Load only a subset of layers that fit into 2GB VRAM
-                self.engine = AsyncLLMEngine.from_engine_args(engine_args)
-                self.model_part = self.engine.model.transformer.h[:6].cuda()  # First 6 layers
-
-            async def forward(self, inputs):
-                """Process the input through the first part of the model."""
-                with torch.no_grad():
-                    inputs = inputs.to("cuda")
-                    outputs = self.model_part(inputs)
-                    return outputs.cpu()  # Send outputs to the next worker
-
-        @ray.remote(num_gpus=1, resources={"accelerator_type_3070": 1})
-        class LargeLayerWorker:
-            def __init__(self, engine_args):
-                # Load the second part of the model that fits into 8GB VRAM
-                self.engine = AsyncLLMEngine.from_engine_args(engine_args)
-                self.model_part = self.engine.model.transformer.h[6:].cuda()  # Remaining layers
-
-            async def forward(self, inputs):
-                """Process the input through the second part of the model."""
-                with torch.no_grad():
-                    inputs = inputs.to("cuda")
-                    outputs = self.model_part(inputs)
-                    return outputs.cpu()  # Final output
-
-
         logger.info(f"Starting with engine args: {engine_args}")
         self.openai_serving_chat = None
         self.engine_args = engine_args
