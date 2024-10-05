@@ -190,8 +190,8 @@ def build_app(cli_args: Dict[str, str]) -> serve.Application:
 
     pg_resources = [
         {"CPU": 1},  # For the deployment replica
-        {"CPU": 1, "GPU": 1, "node:2gb_gpu": 1},  # For the small VRAM worker (2GB)
-        {"CPU": 1, "GPU": 1, "node:8gb_gpu": 1},  # For the large VRAM worker (8GB)
+        {"CPU": 1, "GPU": 1, "accelerator_type_960": 1},  # For the small VRAM worker (2GB)
+        {"CPU": 1, "GPU": 1, "accelerator_type_3070": 1},  # For the large VRAM worker (8GB)
     ]
 
     # We use the "STRICT_SPREAD" strategy below to ensure all vLLM actors are placed on
