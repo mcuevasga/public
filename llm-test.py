@@ -105,7 +105,7 @@ class VLLMDeployment:
             #     served_model_names = self.engine_args.served_model_name
             # else:
             #     served_model_names = [self.engine_args.model]
-            base_model_paths = [BaseModelPath(name="/tmp/models/TinyLlama-1.1B-Chat-v1.0", model_path="/tmp/models/TinyLlama-1.1B-Chat-v1.0")]
+            base_model_paths = [BaseModelPath(name="TinyLlama-1.1B-Chat-v1.0", model_path="/tmp/models/tinyllama-1.1b-chat-v1.0.Q8_0.gguf")]
             self.openai_serving_chat = OpenAIServingChat(
                 self.engine,
                 model_config,
@@ -164,7 +164,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args.tensor_parallel_size = 1
     parsed_args.gpu_memory_utilization = 0.6
 
-    # parsed_args.tokenizer="/tmp/models/TinyLlama-1.1B-Chat-v1.0"
+    parsed_args.tokenizer="/tmp/models/TinyLlama-1.1B-Chat-v1.0"
 
     return parsed_args
 
