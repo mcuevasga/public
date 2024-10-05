@@ -182,17 +182,17 @@ def build_app(cli_args: Dict[str, str]) -> serve.Application:
     engine_args = AsyncEngineArgs.from_cli_args(parsed_args)
     engine_args.worker_use_ray = True
 
-    tp = engine_args.tensor_parallel_size
+    tp = engine_args.tensor_parallel_size * parsed_args.pipeline_parallel_size
     logger.info(f"Tensor parallelism = {tp}")
-    # pg_resources = []
-    # pg_resources.append({"CPU": 1})  # for the deployment replica
-    # for i in range(tp):
-    #     pg_resources.append({"CPU": 1, "GPU": 1})  # for the vLLM actors
+    pg_resources = []
+    pg_resources.append({"CPU": 1})  # for the deployment replica
+    for i in range(tp):
+        pg_resources.append({"CPU": 1, "GPU": 1})  # for the vLLM actors
 
-    pg_resources = [
-        {"CPU": 1, "GPU": 1},  # For the small VRAM worker (2GB)
-        {"CPU": 1, "GPU": 1},  # For the large VRAM worker (8GB)
-    ]
+    # pg_resources = [
+    #     {"CPU": 1, "GPU": 1},  # For the small VRAM worker (2GB)
+    #     {"CPU": 1, "GPU": 1},  # For the large VRAM worker (8GB)
+    # ]
 
     # We use the "STRICT_SPREAD" strategy below to ensure all vLLM actors are placed on
     # different Ray nodes.
