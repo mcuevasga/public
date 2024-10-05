@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, JSONResponse, Response
 
+import ray
 from ray import serve
 
 from vllm.engine.arg_utils import AsyncEngineArgs
