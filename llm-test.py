@@ -117,15 +117,9 @@ class VLLMDeployment:
                 request_logger=None,
             )
         logger.info(f"Request: {request}")
-        # generator = await self.openai_serving_chat.create_chat_completion(
-        #     request, raw_request
-        # )
-
-        # Execute the first part of the model on the small VRAM worker (2GB node)
-        intermediate_output = await self.small_vram_worker.forward.remote(request)
-
-        # Execute the second part on the large VRAM worker (8GB node)
-        final_output = await self.large_vram_worker.forward.remote(intermediate_output)
+        generator = await self.openai_serving_chat.create_chat_completion(
+            request, raw_request
+        )
 
         if isinstance(generator, ErrorResponse):
             return JSONResponse(
