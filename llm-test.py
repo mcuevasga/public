@@ -69,7 +69,7 @@ class VLLMDeployment:
             #     served_model_names = self.engine_args.served_model_name
             # else:
             #     served_model_names = [self.engine_args.model]
-            base_model_paths = [BaseModelPath(name="TinyLlama-1.1B-Chat-v1.0", model_path="/tmp/models/tinyllama-1.1b-chat-v1.0.Q8_0.gguf")]
+            base_model_paths = [BaseModelPath(name="TinyLlama-1.1B-Chat-v1.0", model_path="/data/models/cache/tinyllama-1.1b-chat-v1.0.Q8_0.gguf")]
             self.openai_serving_chat = OpenAIServingChat(
                 self.engine,
                 model_config,
@@ -114,7 +114,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args = parser.parse_args(args=arg_strings)
 
     filename = "tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
-    local_dir = "/tmp/models/"
+    local_dir = "/data/models/cache/"
     model = f'{local_dir}{filename}'
     # model = "/tmp/models/TinyLlama-1.1B-Chat-v1.0"
 
