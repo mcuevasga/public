@@ -122,7 +122,14 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args.tensor_parallel_size = 1
     parsed_args.pipeline_parallel_size = 2
     parsed_args.gpu_memory_utilization = 0.8
-    parsed_args.chat_template="/data/models/cache/llama2_7b_chat_uncensored/template.jinja"
+
+    template_str = """
+    System: {{ system_message }}
+    User: {{ user_message }}
+    """
+    # parsed_args.chat_template="/data/models/cache/llama2_7b_chat_uncensored/template.jinja"
+
+    parsed_args.chat_template=template_str
 
     parsed_args.tokenizer="/data/models/cache/llama2_7b_chat_uncensored"
 
