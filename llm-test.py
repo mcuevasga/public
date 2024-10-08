@@ -155,7 +155,7 @@ def build_app(cli_args: Dict[str, str]) -> serve.Application:
     # We use the "STRICT_SPREAD" strategy below to ensure all vLLM actors are placed on
     # different Ray nodes.
     return VLLMDeployment.options(
-        placement_group_bundles=pg_resources, placement_group_strategy="STRICT_SPREAD"
+        placement_group_bundles=pg_resources, placement_group_strategy="PACK"
     ).bind(
         engine_args,
         parsed_args.response_role,
