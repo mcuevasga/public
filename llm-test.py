@@ -69,7 +69,7 @@ class VLLMDeployment:
             #     served_model_names = self.engine_args.served_model_name
             # else:
             #     served_model_names = [self.engine_args.model]
-            base_model_paths = [BaseModelPath(name="TinyLlama-1.1B-Chat-v1.0", model_path="/data/models/cache/tinyllama-1.1b-chat-v1.0.Q8_0.gguf")]
+            base_model_paths = [BaseModelPath(name="llama2_7b_chat_uncensored", model_path="/data/models/cache/llama2_7b_chat_uncensored.Q8_0.gguf")]
             self.openai_serving_chat = OpenAIServingChat(
                 self.engine,
                 model_config,
@@ -113,7 +113,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     logger.info(arg_strings)
     parsed_args = parser.parse_args(args=arg_strings)
 
-    filename = "tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
+    filename = "llama2_7b_chat_uncensored.Q8_0.gguf"
     local_dir = "/data/models/cache/"
     model = f'{local_dir}{filename}'
     # model = "/tmp/models/TinyLlama-1.1B-Chat-v1.0"
@@ -121,9 +121,9 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args.model = model
     parsed_args.tensor_parallel_size = 1
     parsed_args.pipeline_parallel_size = 2
-    parsed_args.gpu_memory_utilization = 0.6
+    parsed_args.gpu_memory_utilization = 0.8
 
-    parsed_args.tokenizer="/data/models/cache/TinyLlama-1.1B-Chat-v1.0"
+    parsed_args.tokenizer="/data/models/cache/llama2_7b_chat_uncensored"
 
     return parsed_args
 
