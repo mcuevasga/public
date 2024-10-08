@@ -124,8 +124,13 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args.gpu_memory_utilization = 0.8
 
     template_str = """
-    System: {{ system_message }}
-    User: {{ user_message }}
+    {%- for message in messages %}
+    {{- '<|' + message['role'] + |>\n' }}
+    {{- message['content'] + eos_token }}
+    {%- endfor %}
+    {%- if add_generation_prompt %}
+        {{- '<|assistant|>\n' }}
+    {%- endif %}
     """
     # parsed_args.chat_template="/data/models/cache/llama2_7b_chat_uncensored/template.jinja"
 
@@ -163,7 +168,7 @@ def build_app(cli_args: Dict[str, str]) -> serve.Application:
     # We use the "STRICT_SPREAD" strategy below to ensure all vLLM actors are placed on
     # different Ray nodes.
     return VLLMDeployment.options(
-        placement_group_bundles=pg_resources, placement_group_strategy="PACK"
+        placement_group_bundles=pg_resources, placement_group_strategy="SPREAD"
     ).bind(
         engine_args,
         parsed_args.response_role,
