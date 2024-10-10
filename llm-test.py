@@ -113,25 +113,25 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     logger.info(arg_strings)
     parsed_args = parser.parse_args(args=arg_strings)
 
-    filename = "llama2_7b_chat_uncensored.Q8_0.gguf"
+    model_file = "llama2_7b_chat_uncensored.Q8_0.gguf"
     model_folder = "llama2_7b_chat_uncensored"
     local_dir = "/data/models/cache/"
-    model = f'{local_dir}{filename}'
-    model_tokenizer = f'{local_dir}{model_folder}'
+    model_model_file = f'{local_dir}{model_file}'
+    model_model_folder = f'{local_dir}{model_folder}'
 
-    parsed_args.model = model
+    parsed_args.model = model_model_file
     parsed_args.tensor_parallel_size = 1
-    parsed_args.pipeline_parallel_size = 1
+    parsed_args.pipeline_parallel_size = 2
     parsed_args.gpu_memory_utilization = 1
     parsed_args.max_num_seqs = 1
-    parsed_args.max_model_len = 1408
+    # parsed_args.max_model_len = 1408
 
-    template_str =chat_template = "<s>[INST] <<SYS>>\n{your_system_message}\n<</SYS>>\n\n{user_message_1} [/INST]"
+    # template_str =chat_template = "<s>[INST] <<SYS>>\n{your_system_message}\n<</SYS>>\n\n{user_message_1} [/INST]"
     # parsed_args.chat_template="/data/models/cache/llama2_7b_chat_uncensored/template.jinja"
 
-    parsed_args.chat_template=template_str
+    # parsed_args.chat_template=template_str
 
-    parsed_args.tokenizer=model_tokenizer
+    parsed_args.tokenizer=model_model_folder
 
     return parsed_args
 
