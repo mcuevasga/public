@@ -124,7 +124,6 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args.pipeline_parallel_size = 1
     parsed_args.gpu_memory_utilization = 1
     parsed_args.max_num_seqs = 1
-    parsed_args.max_num_batched_tokens = 1
 
     template_str =chat_template = """
     {% if messages[0]['role'] == 'system' %}
