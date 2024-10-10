@@ -152,9 +152,9 @@ def parse_vllm_args(cli_args: Dict[str, str]):
         {% endif %}
     {% endfor %}
     """
-    # parsed_args.chat_template="/data/models/cache/llama2_7b_chat_uncensored/template.jinja"
+    parsed_args.chat_template="/data/models/cache/llama2_7b_chat_uncensored/template.jinja"
 
-    parsed_args.chat_template=template_str
+    # parsed_args.chat_template=template_str
 
     parsed_args.tokenizer=model_tokenizer
 
