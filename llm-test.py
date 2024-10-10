@@ -126,11 +126,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args.max_num_seqs = 1
     parsed_args.max_model_len = 1408
 
-    template_str =chat_template = """
-    [INST] <<SYS>>{{ .System }}<</SYS>>
-
-    {{ .Prompt }} [/INST]
-    """
+    template_str =chat_template = "<s>[INST] <<SYS>>\n{your_system_message}\n<</SYS>>\n\n{user_message_1} [/INST]"
     # parsed_args.chat_template="/data/models/cache/llama2_7b_chat_uncensored/template.jinja"
 
     parsed_args.chat_template=template_str
