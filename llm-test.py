@@ -69,7 +69,7 @@ class VLLMDeployment:
             #     served_model_names = self.engine_args.served_model_name
             # else:
             #     served_model_names = [self.engine_args.model]
-            base_model_paths = [BaseModelPath(name="Llama-3.2-11B-Vision-Instruct-FP8-dynamic", model_path=self.engine_args.model)]
+            base_model_paths = [BaseModelPath(name="Llama-3.2-3B-Instruct", model_path=self.engine_args.model)]
             self.openai_serving_chat = OpenAIServingChat(
                 self.engine,
                 model_config,
@@ -122,7 +122,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args.model = model_model_folder
     parsed_args.tensor_parallel_size = 1
     parsed_args.pipeline_parallel_size = 2
-    parsed_args.gpu_memory_utilization = 1
+    parsed_args.gpu_memory_utilization = 0.8
     parsed_args.max_num_seqs = 1
     # parsed_args.max_model_len = 1408
 
