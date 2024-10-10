@@ -123,14 +123,31 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args.pipeline_parallel_size = 2
     parsed_args.gpu_memory_utilization = 0.8
 
-    template_str = """
-    {%- for message in messages %}
-    {{- '<|' + message['role'] + |>\n' }}
-    {{- message['content'] + eos_token }}
-    {%- endfor %}
-    {%- if add_generation_prompt %}
-        {{- '<|assistant|>\n' }}
-    {%- endif %}
+    template_str =chat_template = """
+{% if messages[0]['role'] == 'system' %}
+    {% set system_message = '<<SYS>>\\n' + messages[0]['content'].strip() + '\\n<</SYS>>\\n\\n' %}
+    {% set messages = messages[1:] %}
+{% else %}
+    {% set system_message = '' %}
+{% endif %}
+
+{% for message in messages %}
+    {% if (message['role'] == 'user') != (loop.index0 % 2 == 0) %}
+        {{ raise_exception('Conversation roles must alternate user/assistant/user/assistant/...') }}
+    {% endif %}
+
+    {% if loop.index0 == 0 %}
+        {% set content = system_message + message['content'] %}
+    {% else %}
+        {% set content = message['content'] %}
+    {% endif %}
+
+    {% if message['role'] == 'user' %}
+        {{ bos_token + '[INST] ' + content.strip() + ' [/INST]' }}
+    {% elif message['role'] == 'assistant' %}
+        {{ ' ' + content.strip() + ' ' + eos_token }}
+    {% endif %}
+{% endfor %}
     """
     # parsed_args.chat_template="/data/models/cache/llama2_7b_chat_uncensored/template.jinja"
 
