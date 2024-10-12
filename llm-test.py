@@ -116,7 +116,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     # model_file = "llama2_7b_chat_uncensored.Q8_0.gguf"
     model_folder = "TinyLlama-1.1B-Chat-v1.0"
     local_dir = "/data/models/cache/"
-    model_model_file = f'{local_dir}{model_file}'
+    # model_model_file = f'{local_dir}{model_file}'
     model_model_folder = f'{local_dir}{model_folder}'
 
     parsed_args.model = model_model_folder
