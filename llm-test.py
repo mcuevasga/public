@@ -69,7 +69,7 @@ class VLLMDeployment:
             #     served_model_names = self.engine_args.served_model_name
             # else:
             #     served_model_names = [self.engine_args.model]
-            base_model_paths = [BaseModelPath(name="Llama-3.2-3B-Instruct-Q8_0.gguf", model_path="/data/models/cache/Llama-3.2-3B-Instruct-Q8_0.gguf")]
+            base_model_paths = [BaseModelPath(name="TinyLlama", model_path=self.engine_args.model)]
             self.openai_serving_chat = OpenAIServingChat(
                 self.engine,
                 model_config,
@@ -113,10 +113,10 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     logger.info(arg_strings)
     parsed_args = parser.parse_args(args=arg_strings)
 
-    model_file = "Llama-3.2-3B-Instruct-Q8_0.gguf"
-    model_folder = "Llama-3.2-3B-Instruct"
+    # model_file = "Llama-3.2-3B-Instruct-Q8_0.gguf"
+    model_folder = "TinyLlama-1.1B-Chat-v1.0"
     local_dir = "/data/models/cache/"
-    model_model_file = f'{local_dir}{model_file}'
+    # model_model_file = f'{local_dir}{model_file}'
     model_model_folder = f'{local_dir}{model_folder}'
 
     # Llama-3.2-11B-Vision-Instruct-FP8-dynamic  Llama-3.2-3B-Instruct-Q8_0.gguf  gemma-2-9b-it              llama2_7b_chat_uncensored.Q8_0.gguf
