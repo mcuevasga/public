@@ -69,7 +69,7 @@ class VLLMDeployment:
             #     served_model_names = self.engine_args.served_model_name
             # else:
             #     served_model_names = [self.engine_args.model]
-            base_model_paths = [BaseModelPath(name="Llama-3.2-3B-Instruct-Q8_0.gguf", model_path=self.engine_args.model)]
+            base_model_paths = [BaseModelPath(name="Llama-3.2-3B-Instruct-Q8_0.gguf", model_path="/data/models/cache/Llama-3.2-3B-Instruct-Q8_0.gguf")]
             self.openai_serving_chat = OpenAIServingChat(
                 self.engine,
                 model_config,
