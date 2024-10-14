@@ -69,7 +69,7 @@ class VLLMDeployment:
             #     served_model_names = self.engine_args.served_model_name
             # else:
             #     served_model_names = [self.engine_args.model]
-            base_model_paths = [BaseModelPath(name="metallama-31-8b-inst", model_path=self.engine_args.model)]
+            base_model_paths = [BaseModelPath(name="/data/models/cache/metallama-31-8b-inst", model_path="/data/models/cache/metallama-31-8b-inst")]
             self.openai_serving_chat = OpenAIServingChat(
                 self.engine,
                 model_config,
@@ -134,7 +134,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     # template_str =chat_template = "<s>[INST] <<SYS>>\n{your_system_message}\n<</SYS>>\n\n{user_message_1} [/INST]"
     # parsed_args.chat_template="/data/models/cache/llama2_7b_chat_uncensored/template.jinja"
 
-    # parsed_args.chat_template=template_str
+    # parsed_args.chat_template=template_str      
 
     parsed_args.tokenizer=model_model_folder
 
