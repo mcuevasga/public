@@ -123,7 +123,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     # Llama-3.2-3B-Instruct                      TinyLlama-1.1B-Chat-v1.0         llama2_7b_chat_uncensored  tinyllama-1.1b-chat-v1.0.Q8_0.gguf
 
 
-    parsed_args.model = model_folder
+    parsed_args.model = model_model_folder
     parsed_args.tensor_parallel_size = 1
     parsed_args.pipeline_parallel_size = 3
     parsed_args.gpu_memory_utilization = 0.95
