@@ -69,7 +69,7 @@ class VLLMDeployment:
             #     served_model_names = self.engine_args.served_model_name
             # else:
             #     served_model_names = [self.engine_args.model]
-            base_model_paths = [BaseModelPath(name="/tmp/models/TinyLlama-1.1B-Chat-v1.0", model_path="/tmp/models/TinyLlama-1.1B-Chat-v1.0")]
+            base_model_paths = [BaseModelPath(name="MetaLlama", model_path=self.engine_args.model)]
             self.openai_serving_chat = OpenAIServingChat(
                 self.engine,
                 model_config,
@@ -84,6 +84,7 @@ class VLLMDeployment:
         generator = await self.openai_serving_chat.create_chat_completion(
             request, raw_request
         )
+
         if isinstance(generator, ErrorResponse):
             return JSONResponse(
                 content=generator.model_dump(), status_code=generator.code
@@ -112,16 +113,30 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     logger.info(arg_strings)
     parsed_args = parser.parse_args(args=arg_strings)
 
-    # filename = "tinyllama-1.1b-chat-v1.0.Q8_0.gguf"
-    # local_dir = "/tmp/models/"
-    # model = f'{local_dir}{filename}'
-    model = "/tmp/models/TinyLlama-1.1B-Chat-v1.0"
+    model_file = "meta-llama-3.1-8b-instruct.f16.gguf"
+    model_folder = "metallama-31-8b-inst"
+    local_dir = "/data/models/cache/"
+    model_model_file = f'{local_dir}{model_file}'
+    model_model_folder = f'{local_dir}{model_folder}'
 
-    parsed_args.model = model
+    # Llama-3.2-11B-Vision-Instruct-FP8-dynamic  Llama-3.2-3B-Instruct-Q8_0.gguf  gemma-2-9b-it              llama2_7b_chat_uncensored.Q8_0.gguf
+    # Llama-3.2-3B-Instruct                      TinyLlama-1.1B-Chat-v1.0         llama2_7b_chat_uncensored  tinyllama-1.1b-chat-v1.0.Q8_0.gguf
+
+
+    parsed_args.model = model_model_file
     parsed_args.tensor_parallel_size = 1
-    parsed_args.gpu_memory_utilization = 0.6
+    parsed_args.pipeline_parallel_size = 3
+    parsed_args.gpu_memory_utilization = 0.95
+    parsed_args.max_num_seqs = 1
+    # parsed_args.dtype = "half"
+    # parsed_args.max_model_len = 50000
 
-    # parsed_args.tokenizer="/tmp/models/TinyLlama-1.1B-Chat-v1.0"
+    # template_str =chat_template = "<s>[INST] <<SYS>>\n{your_system_message}\n<</SYS>>\n\n{user_message_1} [/INST]"
+    # parsed_args.chat_template="/data/models/cache/llama2_7b_chat_uncensored/template.jinja"
+
+    # parsed_args.chat_template=template_str      
+
+    parsed_args.tokenizer=model_model_folder
 
     return parsed_args
 
@@ -138,17 +153,22 @@ def build_app(cli_args: Dict[str, str]) -> serve.Application:
     engine_args = AsyncEngineArgs.from_cli_args(parsed_args)
     engine_args.worker_use_ray = True
 
-    tp = engine_args.tensor_parallel_size
+    tp = engine_args.tensor_parallel_size * parsed_args.pipeline_parallel_size
     logger.info(f"Tensor parallelism = {tp}")
     pg_resources = []
-    pg_resources.append({"CPU": 1})  # for the deployment replica
+    # pg_resources.append({"CPU": 1})  # for the deployment replica
     for i in range(tp):
         pg_resources.append({"CPU": 1, "GPU": 1})  # for the vLLM actors
 
-    # We use the "STRICT_PACK" strategy below to ensure all vLLM actors are placed on
-    # the same Ray node.
+    # pg_resources = [
+    #     {"CPU": 1, "GPU": 1},  # For the small VRAM worker (2GB)
+    #     {"CPU": 1, "GPU": 1},  # For the large VRAM worker (8GB)
+    # ]
+
+    # We use the "STRICT_SPREAD" strategy below to ensure all vLLM actors are placed on
+    # different Ray nodes.
     return VLLMDeployment.options(
-        placement_group_bundles=pg_resources, placement_group_strategy="STRICT_PACK"
+        placement_group_bundles=pg_resources, placement_group_strategy="SPREAD"
     ).bind(
         engine_args,
         parsed_args.response_role,
