@@ -69,7 +69,7 @@ class VLLMDeployment:
             #     served_model_names = self.engine_args.served_model_name
             # else:
             #     served_model_names = [self.engine_args.model]
-            base_model_paths = [BaseModelPath(name="TinyLlama", model_path=self.engine_args.model)]
+            base_model_paths = [BaseModelPath(name="Gemma", model_path=self.engine_args.model)]
             self.openai_serving_chat = OpenAIServingChat(
                 self.engine,
                 model_config,
@@ -114,7 +114,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args = parser.parse_args(args=arg_strings)
 
     # model_file = "Llama-3.2-3B-Instruct-Q8_0.gguf"
-    model_folder = "TinyLlama-1.1B-Chat-v1.0"
+    model_folder = "gemma-2-9b-it"
     local_dir = "/data/models/cache/"
     # model_model_file = f'{local_dir}{model_file}'
     model_model_folder = f'{local_dir}{model_folder}'
@@ -125,7 +125,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
 
     parsed_args.model = model_model_folder
     parsed_args.tensor_parallel_size = 1
-    parsed_args.pipeline_parallel_size = 1
+    parsed_args.pipeline_parallel_size = 3
     parsed_args.gpu_memory_utilization = 0.9
     parsed_args.max_num_seqs = 1
     # parsed_args.max_model_len = 50000
