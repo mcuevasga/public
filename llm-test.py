@@ -126,10 +126,10 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args.model = model_model_file
     parsed_args.tensor_parallel_size = 1
     parsed_args.pipeline_parallel_size = 3
-    parsed_args.gpu_memory_utilization = 0.90
+    parsed_args.gpu_memory_utilization = 0.9
     parsed_args.max_num_seqs = 1
     # parsed_args.dtype = "half"
-    parsed_args.max_model_len = 100
+    # parsed_args.max_model_len = 50000
 
     # template_str =chat_template = "<s>[INST] <<SYS>>\n{your_system_message}\n<</SYS>>\n\n{user_message_1} [/INST]"
     # parsed_args.chat_template="/data/models/cache/llama2_7b_chat_uncensored/template.jinja"
