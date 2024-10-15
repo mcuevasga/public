@@ -113,7 +113,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     logger.info(arg_strings)
     parsed_args = parser.parse_args(args=arg_strings)
 
-    model_file = "meta-llama-3.1-8b-instruct.f16.gguf"
+    model_file = "meta-llama-3.1-8b-instruct.Q8_0.gguf"
     model_folder = "metallama-31-8b-inst"
     local_dir = "/data/models/cache/"
     model_model_file = f'{local_dir}{model_file}'
@@ -126,7 +126,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     parsed_args.model = model_model_file
     parsed_args.tensor_parallel_size = 1
     parsed_args.pipeline_parallel_size = 3
-    parsed_args.gpu_memory_utilization = 0.99
+    parsed_args.gpu_memory_utilization = 0.90
     parsed_args.max_num_seqs = 1
     # parsed_args.dtype = "half"
     parsed_args.max_model_len = 100
